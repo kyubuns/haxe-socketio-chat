@@ -1,10 +1,11 @@
 import Common;
+import js.Node;
 
 class Server {
   static var clients = new IntHash<Socket>();
   static var next_id = 0;
   public static function main() {
-    var io = new Require('socket.io').listen(9876, {'log level': 3, 'heartbeat interval': 120});
+    var io:SocketIO = Node.require('socket.io').listen(9876, {'log level': 3, 'heartbeat interval': 120});
 
     io.sockets.on('connection', function(socket:Socket) {
       var myid = next_id++;

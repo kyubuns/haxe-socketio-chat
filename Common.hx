@@ -1,11 +1,5 @@
 package;
 
-@:native("require")
-extern class Require {
-  function new(data:String) : Void;
-  function listen(port:Int, option:Dynamic) : SocketIO; //Socket.IO
-}
-
 @:native("io")
 extern class IO {
   static function connect(host:String, ?option:Dynamic):Socket;
