@@ -9,7 +9,7 @@ class Client {
 
   static function main():Void {
     new JQuery(Lib.document).ready(function(e) {
-      var socket:Socket = IO.connect('http://localhost:9876/');
+      var socket:Socket = IO.connect('http://localhost:9876/', { reconnect:false });
 
       socket.on('connect', function() {
         addtext("onopen");

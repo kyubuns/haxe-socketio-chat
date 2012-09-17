@@ -8,11 +8,12 @@ extern class Require {
 
 @:native("io")
 extern class IO {
-  static function connect(host:String):Socket;
+  static function connect(host:String, ?option:Dynamic):Socket;
 }
 
 extern class SocketIO {
   var sockets : Sockets;
+  function set(name:String, option:Dynamic):Void;
 }
 
 extern class Sockets {
