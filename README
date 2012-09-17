@@ -1,6 +1,6 @@
 git clone
 　　↘
-　sugo apt-get install haxe
+　sudo apt-get install haxe
 　　↙
 npm install socket.io
 　　　　　　　↘
