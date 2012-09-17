@@ -9,3 +9,7 @@ npm install socket.io
 ＿人人人人人人人人人人人＿
 ＞　node chat_server.js　＜
 ￣^Y^Y^Y^Y^Y^Y^Y^Y^Y^￣
+
+---
+
+haxe v2.10じゃないと通らないらしいのでapt-getじゃダメだった
