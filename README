@@ -1,0 +1,11 @@
+git clone
+　　↘
+　sugo apt-get install haxe
+　　↙
+npm install socket.io
+　　　　　　　↘
+　　　　　　haxe compile.hxml
+　　　　　　　↙
+＿人人人人人人人人人人人＿
+＞　node chat_server.js　＜
+￣^Y^Y^Y^Y^Y^Y^Y^Y^Y^￣
