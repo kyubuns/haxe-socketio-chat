@@ -4,7 +4,7 @@ import Common;
 
 class Client {
   static function addtext(text:String):Void {
-    new JQuery("div#chat").append("<div>" + Sanitize.run(text) + "</div>");
+    new JQuery("div#chat").prepend("<div>" + Sanitize.run(text) + "</div>");
   }
 
   static function main():Void {
