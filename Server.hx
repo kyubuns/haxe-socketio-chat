@@ -4,7 +4,7 @@ class Server {
   static var clients = new IntHash<Socket>();
   static var next_id = 0;
   public static function main() {
-    var io = new Require('socket.io').listen(9876, {'log level': 3, 'heart beat': 120});
+    var io = new Require('socket.io').listen(9876, {'log level': 3, 'heartbeat interval': 120});
 
     io.sockets.on('connection', function(socket:Socket) {
       var myid = next_id++;
@@ -14,7 +14,7 @@ class Server {
         trace(data);
 
         //socket.broadcast.emitと同じ事だが、socket1個1個管理できるのを確かめるために。
-        var tmp:BroadcastChatMessage = { aname:data.name, amsg:data.msg }
+        var tmp:BroadcastChatMessage = { aname:Sanitize.run(data.name), amsg:Sanitize.run(data.msg) }
         for(con in clients) con.emit('chat', tmp);
       });
 

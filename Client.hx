@@ -3,28 +3,33 @@ import js.Lib;
 import Common;
 
 class Client {
-  static function main() {
+  static function addtext(text:String):Void {
+    new JQuery("div#chat").append("<div>" + Sanitize.run(text) + "</div>");
+  }
+
+  static function main():Void {
     new JQuery(Lib.document).ready(function(e) {
       var socket:Socket = IO.connect('http://localhost:9876/');
 
       socket.on('connect', function() {
-        new JQuery("#chat").append("<p>onopen</p>");
+        addtext("onopen");
 
         socket.on('disconnect', function() {
-          new JQuery("#chat").append("<p>onclose</p>");
+          addtext("onclose");
         });
 
         socket.on('chat', function(data:BroadcastChatMessage) {
-          new JQuery("#chat").append("<p>" + data.aname + ":" + data.amsg + "</p>");
+          addtext(data.aname + ":" + data.amsg);
         });
 
         socket.on('ping', function(data) {
-          new JQuery("#chat").append("<p>tick" + data.hello + "</p>");
+          addtext("tick" + data.hello);
         });
 
         new JQuery("#send").click(function(){
           trace("button");
           var tmp:ChatMessage = {name:new JQuery("#name").val(), msg:new JQuery("#message").val()};
+          new JQuery("#message").text("");
           socket.emit('chat', tmp);
         });
       });

@@ -12,4 +12,7 @@ npm install socket.io
 
 ---
 
-haxe v2.10じゃないと通らないらしいのでapt-getじゃダメだった
+環境(ubuntuにそのまま持って行ったら動かなかったのでメモ)
+Haxe Compiler 2.10
+node v0.8.8
+socket.io@0.9.10
