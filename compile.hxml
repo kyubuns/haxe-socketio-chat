@@ -1,10 +1,10 @@
 -js chat_server.js
--main Server
+-main ChatServer
 --dead-code-elimination
 -lib nodejs
 -debug
 --next
 -js chat_client.js
--main Client
+-main ChatClient
 --dead-code-elimination
 -debug
