@@ -78,7 +78,7 @@ class Client extends Connection {
 
 class ChatClient {
   static public function addtext(text:String):Void {
-    new JQuery("div#chat").prepend("<div>" + Sanitize.run(text) + "</div>");
+    new JQuery("div#chat").prepend("<div>" + text + "</div>");
   }
 
   static function main():Void {
