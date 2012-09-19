@@ -29,7 +29,7 @@ class Connection {
     m_socket.on('message', function (data:Dynamic) {
       if(data.length != 3) return;
       try {
-        var commandNo  = cast(data[0], Int);
+        var commandNo  = cast(data[0], Int);  //ToDo: commandNoの検証
         var functionNo = cast(data[1], Int);
         var args:Dynamic = data[2];
 
