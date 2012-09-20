@@ -13,6 +13,6 @@ npm install socket.io
 ---
 
 環境(ubuntuにそのまま持って行ったら動かなかったのでメモ)
-Haxe Compiler 2.10
+Haxe Compiler 2.10 <- なんか新しくても古くてもエラー吐いたり必要なコード吐かれなかったりする
 node v0.8.8
 socket.io@0.9.10
