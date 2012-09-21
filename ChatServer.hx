@@ -47,9 +47,24 @@ class Connection {
       }
     });
 
+    m_socket.on('handshake', function (data:Dynamic) {
+      try {
+        var protocolhash = cast(data, String);
+        if(protocolhash != 'hogefugapiyorofi') throw "wrong version";
+        trace("handshake ok");
+        m_handshaked = true;
+        m_commandNo = 0;
+      }
+      catch(errorMsg:String) {
+        trace("handshake error");
+      }
+      m_socket.emit('handshake', [m_handshaked, m_commandNo]);
+      if(m_handshaked == false) m_socket.disconnect();
+    });
+
     socket.on('disconnect', onclose);
-    m_handshaked = true;//ToDo
-    m_commandNo = 0;//ToDo
+    m_handshaked = false;
+    m_commandNo = -1024;
   }
 
   static private function sanitize(str:String):String {

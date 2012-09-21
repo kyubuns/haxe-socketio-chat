@@ -12,11 +12,12 @@ class Connection {
   public function new():Void {}
   public function connect(host:String):Void {
     m_socket = IO.connect(host, { reconnect:false, 'connect timeout': 1000 });
-    m_socket.on('error', error);
+    m_socket.on('error', function(){ error("socket error"); });
     m_socket.on('connect_failed', connectFailed);
     m_socket.on('connect', function() {
       m_socket.on('disconnect', onclose);
       m_socket.on('message', function(data:Dynamic) {
+        if(m_handshaked == false) return;
         if(data.length != 3) return;
         try {
           var commandNo  = cast(data[0], Int);
@@ -31,13 +32,29 @@ class Connection {
             var msg  = sanitize(cast(args[1], String));
             chatNotify(name, msg);
           }
-        } catch(errorMsg:String) {
+        }
+        catch(errorMsg:String) {
           //クライアント側は変なデータきてもそのデータ無視するだけで。
           trace("wrong data received");
         }
       });
-      onopen();
-      m_handshaked = true;//ToDo
+      m_socket.on('handshake', function(data:Dynamic) {
+        if(data.length != 2) return;
+        try {
+          m_handshaked = cast(data[0], Bool);
+          m_commandNo  = cast(data[1], Int);
+          if(m_handshaked == false) {
+            error("handshake error");
+            return;
+          }
+          onopen();
+        }
+        catch(errorMsg:String) {
+          error("handshake error");
+        }
+      });
+      m_socket.emit('handshake', 'hogefugapiyorofi');
+      m_handshaked = false;
       m_commandNo = 0;
     });
   }
@@ -59,7 +76,7 @@ class Connection {
 
   //receive
   public function onopen():Void {}
-  public function error():Void {}
+  public function error(msg:String):Void {}
   public function onclose():Void {}
   public function connectFailed():Void {}
   public function chatNotify(name:String, msg:String):Void {}
@@ -79,8 +96,8 @@ class Client extends Connection {
     ChatClient.addtext("<b>サーバーとの接続が切れました。</b>");
   }
 
-  override public function error():Void {
-    ChatClient.addtext("<b>エラーが発生しました。</b>");
+  override public function error(msg:String):Void {
+    ChatClient.addtext("<b>エラーが発生しました。["+ msg +"]</b>");
   }
 
   override public function chatNotify(name:String, msg:String):Void {
