@@ -92,6 +92,7 @@ class Client extends Connection{
 
   override public function chat(name:String, msg:String):Void {
     if(name == "" || msg == "") return;
+    name = name + "(ID:" + Std.string(myid) + ")";
     for(con in clients) con.chatNotify(name, msg);
   }
 
