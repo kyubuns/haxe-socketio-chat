@@ -29,7 +29,11 @@ class Connection {
     m_socket.on('message', function (data:Dynamic) {
       if(data.length != 3) return;
       try {
-        var commandNo  = cast(data[0], Int);  //ToDo: commandNoの検証
+        var commandNo  = cast(data[0], Int);
+        if(m_handshaked == false) return;
+        if(commandNo < 0 || commandNo <= m_commandNo) throw "wrong command NO";
+        m_commandNo = (commandNo < 1000) ? commandNo : 0;
+
         var functionNo = cast(data[1], Int);
         var args:Dynamic = data[2];
 
@@ -42,7 +46,7 @@ class Connection {
           chat(name, msg);
         }
       } catch(errorMsg:String) {
-        trace("wrong data received");
+        trace("wrong data received ["+errorMsg+"]");
         socket.disconnect();
       }
     });
@@ -78,7 +82,7 @@ class Connection {
   //send
   public function chatNotify(name:String, msg:String):Bool {
     if(!m_handshaked) return false;
-    m_socket.emit('message', [m_commandNo, 123, [sanitize(name), sanitize(msg)]]);
+    m_socket.emit('message', [++m_commandNo, 123, [sanitize(name), sanitize(msg)]]);
     return true;
   }
 

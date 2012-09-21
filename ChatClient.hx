@@ -3,7 +3,6 @@ import js.Lib;
 import Common;
 
 //==============ライブラリでやる==================
-//ToDo: handshake
 class Connection {
   private var m_socket:Socket;
   private var m_handshaked:Bool;
@@ -20,7 +19,7 @@ class Connection {
         if(m_handshaked == false) return;
         if(data.length != 3) return;
         try {
-          var commandNo  = cast(data[0], Int);
+          m_commandNo  = cast(data[0], Int);
           var functionNo = cast(data[1], Int);
           var args:Dynamic = data[2];
 
@@ -55,7 +54,7 @@ class Connection {
       });
       m_socket.emit('handshake', 'hogefugapiyorofi');
       m_handshaked = false;
-      m_commandNo = 0;
+      m_commandNo = -1024;
     });
   }
 
@@ -70,7 +69,7 @@ class Connection {
   //send
   public function chat(name:String, msg:String):Bool {
     if(!m_handshaked) return false;
-    m_socket.emit('message', [m_commandNo, 123, [sanitize(name), sanitize(msg)]]);
+    m_socket.emit('message', [++m_commandNo, 123, [sanitize(name), sanitize(msg)]]);
     return true;
   }
 
