@@ -18,6 +18,7 @@ extern class Socket {
   function emit(event:String, data:Dynamic) : Void;
   @:overload(function (event:String, handler:Void->Void):Void{})
   function on(event:String, handler:Dynamic->Void) : Void;
+  function disconnect() : Void;
 }
 
 @:native("setInterval")

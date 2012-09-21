@@ -11,7 +11,9 @@ class Connection {
 
   public function new():Void {}
   public function connect(host:String):Void {
-    m_socket = IO.connect(host, { reconnect:false });
+    m_socket = IO.connect(host, { reconnect:false, 'connect timeout': 1000 });
+    m_socket.on('error', error);
+    m_socket.on('connect_failed', connectFailed);
     m_socket.on('connect', function() {
       m_socket.on('disconnect', onclose);
       m_socket.on('message', function(data:Dynamic) {
@@ -57,18 +59,28 @@ class Connection {
 
   //receive
   public function onopen():Void {}
+  public function error():Void {}
   public function onclose():Void {}
+  public function connectFailed():Void {}
   public function chatNotify(name:String, msg:String):Void {}
 }
 //================================================
 
 class Client extends Connection {
   override public function onopen():Void {
-    ChatClient.addtext("onopen");
+    ChatClient.addtext("<b>サーバーに接続しました。</b>");
+  }
+
+  override public function connectFailed():Void {
+    ChatClient.addtext("<b>サーバーに接続できませんでした。</b>");
   }
 
   override public function onclose():Void {
-    ChatClient.addtext("onclose");
+    ChatClient.addtext("<b>サーバーとの接続が切れました。</b>");
+  }
+
+  override public function error():Void {
+    ChatClient.addtext("<b>エラーが発生しました。</b>");
   }
 
   override public function chatNotify(name:String, msg:String):Void {
@@ -84,6 +96,7 @@ class ChatClient {
   static function main():Void {
     new JQuery(Lib.document).ready(function(e) {
       var con = new Client();
+      ChatClient.addtext("<b>サーバーに接続中...</b>");
       con.connect('http://localhost:9876/');
 
       new JQuery("#send").click(function(){

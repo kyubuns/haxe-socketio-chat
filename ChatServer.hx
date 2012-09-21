@@ -42,8 +42,8 @@ class Connection {
           chat(name, msg);
         }
       } catch(errorMsg:String) {
-        //ToDo:サーバー側は変なデータ来たら即切断
         trace("wrong data received");
+        socket.disconnect();
       }
     });
 
@@ -102,7 +102,7 @@ class ChatServer {
     var server:Server = new Server();
     server.listen(9876, {'log level': 3, 'heartbeat interval': 120, 'close timeout': 180}, Client);
 
-    new SetInterval(ChatServer.tick, 10000);
+    new SetInterval(ChatServer.tick, 60000);
     tick();
   }
 
