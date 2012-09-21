@@ -84,7 +84,7 @@ class Client extends Connection {
   }
 
   override public function chatNotify(name:String, msg:String):Void {
-    ChatClient.addtext(name + ":" + msg);
+    ChatClient.addtext(name + " - " + msg);
   }
 }
 
