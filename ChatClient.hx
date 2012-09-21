@@ -46,7 +46,7 @@ class Connection {
     str = StringTools.replace(str, "<", '&lt;');
     str = StringTools.replace(str, ">", '&gt;');
     str = StringTools.replace(str, '"', '&quot;');
-    str = StringTools.replace(str, "'", '&$39;');
+    str = StringTools.replace(str, "'", '&apos;');
     return str;
   }
 
