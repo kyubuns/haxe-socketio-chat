@@ -100,7 +100,12 @@ class ChatClient {
       con.connect('http://localhost:9876/');
 
       new JQuery("#send").click(function(){
-        con.chat(new JQuery("#name").val(), new JQuery("#message").val());
+        //ToDo: JQueryでテキストボックスから文字列受け取るのメソッド化する
+        //(nullチェック中でやりたい)
+        var name:String = new JQuery("#name").val();
+        var msg:String = new JQuery("#message").val();
+        if(name == "" || msg == "") return;
+        con.chat(name, msg);
         new JQuery("#message").val("");
       });
     });

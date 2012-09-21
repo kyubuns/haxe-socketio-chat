@@ -91,6 +91,7 @@ class Client extends Connection{
   }
 
   override public function chat(name:String, msg:String):Void {
+    if(name == "" || msg == "") return;
     for(con in clients) con.chatNotify(name, msg);
   }
 
