@@ -83,11 +83,13 @@ class Client extends Connection{
     clients.set(myid, this);
 
     trace("onopen - ID:" + Std.string(myid));
+    for(con in Client.clients) con.chatNotify("info", "誰か来たよ〜");
   }
 
   override public function onclose():Void {
     clients.remove(myid);
     trace("onclose - ID:" + Std.string(myid));
+    for(con in Client.clients) con.chatNotify("info", "誰か帰ったよ〜");
   }
 
   override public function chat(name:String, msg:String):Void {
