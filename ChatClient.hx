@@ -7,6 +7,7 @@ class Connection {
   private var m_socket:Socket;
   private var m_handshaked:Bool;
   private var m_commandNo:Int;
+  private var m_functions:IntHash<Dynamic->Void>;
 
   public function new():Void {}
   public function connect(host:String):Void {
@@ -22,40 +23,35 @@ class Connection {
           m_commandNo  = cast(data[0], Int);
           var functionNo = cast(data[1], Int);
           var args:Dynamic = data[2];
-
-          //ToDo: リファクタリング
-          if(functionNo == 123) {
-            //chatNotify
-            if(args.length != 2) return;
-            var name = sanitize(cast(args[0], String));
-            var msg  = sanitize(cast(args[1], String));
-            chatNotify(name, msg);
-          }
+          var func = m_functions.get(functionNo);
+          if(func == null) throw "non-existent function";
+          func(args);
         }
         catch(errorMsg:String) {
           //クライアント側は変なデータきてもそのデータ無視するだけで。
-          trace("wrong data received");
+          trace("wrong data received ["+errorMsg+"]");
         }
       });
-      m_socket.on('handshake', function(data:Dynamic) {
-        if(data.length != 2) return;
-        try {
-          m_handshaked = cast(data[0], Bool);
-          m_commandNo  = cast(data[1], Int);
-          if(m_handshaked == false) {
-            error("handshake error");
-            return;
-          }
-          onopen();
-        }
-        catch(errorMsg:String) {
-          error("handshake error");
-        }
-      });
+      m_socket.on('handshake', handshakeReply);
       m_socket.emit('handshake', 'hogefugapiyorofi');
       m_handshaked = false;
       m_commandNo = -1024;
     });
+  }
+
+  private function handshakeReply(data:Dynamic):Void {
+    if(data.length != 2) return;
+    try {
+      m_handshaked = cast(data[0], Bool);
+      m_commandNo  = cast(data[1], Int);
+      if(m_handshaked == false) throw "reject";
+
+      m_functions = new IntHash<Dynamic->Void>();
+      m_functions.set(123, call_chatNotify);
+
+      onopen();
+    }
+    catch(errorMsg:String) error("handshake error");
   }
 
   static private function sanitize(str:String):String {
@@ -66,14 +62,19 @@ class Connection {
     return str;
   }
 
-  //send
+  private function call_chatNotify(args:Dynamic) {
+    if(args.length != 2) return;
+    var name = sanitize(cast(args[0], String));
+    var msg  = sanitize(cast(args[1], String));
+    chatNotify(name, msg);
+  }
+
   public function chat(name:String, msg:String):Bool {
     if(!m_handshaked) return false;
     m_socket.emit('message', [++m_commandNo, 123, [sanitize(name), sanitize(msg)]]);
     return true;
   }
 
-  //receive
   public function onopen():Void {}
   public function error(msg:String):Void {}
   public function onclose():Void {}

@@ -3,8 +3,6 @@ import js.Node;
 import Std;
 
 //================================================
-//ToDo: ChatClientのToDoと同じ！
-//typedef ServerOption = {log level:Int, heartbeat interval:Int};//ToDo:キーにspace入ってたら無理
 class Server {
   private var m_io:SocketIO;
 
@@ -23,6 +21,7 @@ class Connection {
   private var m_socket:Socket;
   private var m_handshaked:Bool;
   private var m_commandNo:Int;
+  private var m_functions:IntHash<Dynamic->Void>;
 
   public function new(socket:Socket):Void {
     m_socket = socket;
@@ -36,39 +35,49 @@ class Connection {
 
         var functionNo = cast(data[1], Int);
         var args:Dynamic = data[2];
-
-        //ToDo: リファクタリング
-        if(functionNo == 123) {
-          //chatNotify
-          if(args.length != 2) return;
-          var name = sanitize(cast(args[0], String));
-          var msg  = sanitize(cast(args[1], String));
-          chat(name, msg);
-        }
-      } catch(errorMsg:String) {
+        var func = m_functions.get(functionNo);
+        if(func == null) throw "non-existent function";
+        func(args);
+      }
+      catch(errorMsg:String) {
         trace("wrong data received ["+errorMsg+"]");
         socket.disconnect();
       }
     });
 
-    m_socket.on('handshake', function (data:Dynamic) {
-      try {
-        var protocolhash = cast(data, String);
-        if(protocolhash != 'hogefugapiyorofi') throw "wrong version";
-        trace("handshake ok");
-        m_handshaked = true;
-        m_commandNo = 0;
-      }
-      catch(errorMsg:String) {
-        trace("handshake error");
-      }
-      m_socket.emit('handshake', [m_handshaked, m_commandNo]);
-      if(m_handshaked == false) m_socket.disconnect();
-    });
-
+    m_socket.on('handshake', handshakeRequest);
     socket.on('disconnect', onclose);
     m_handshaked = false;
     m_commandNo = -1024;
+  }
+
+  private function handshakeRequest(data:Dynamic) {
+    try {
+      var protocolhash = cast(data, String);
+      if(protocolhash != 'hogefugapiyorofi') throw "wrong version";
+      trace("handshake ok");
+      m_handshaked = true;
+      m_commandNo = 0;
+    }
+    catch(errorMsg:String) {
+      trace("handshake error");
+    }
+
+    m_socket.emit('handshake', [m_handshaked, m_commandNo]);
+    if(m_handshaked == false) {
+      m_socket.disconnect();
+      return;
+    }
+
+    m_functions = new IntHash<Dynamic->Void>();
+    m_functions.set(123, call_chat);
+  }
+
+  private function call_chat(args:Dynamic) {
+    if(args.length != 2) return;
+    var name = sanitize(cast(args[0], String));
+    var msg  = sanitize(cast(args[1], String));
+    chat(name, msg);
   }
 
   static private function sanitize(str:String):String {
